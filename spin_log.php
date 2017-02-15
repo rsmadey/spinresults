@@ -3,7 +3,7 @@
 
 
 $input_correct = true;
-/*
+
 if(count($_POST) != 4){
 	exit();// invalid request
 }
@@ -13,15 +13,15 @@ $player_id = $_POST['id'];
 $coins_bet = $_POST['bet'];
 $coins_won = $_POST['winning']; // -1 will mean a lost run adn coins bet will be deducted
 $hash = md5($_POST['hash']);
- */
 
 
+/*
 //testing code
 $player_id = 3;
 $coins_bet = 5;
 $coins_won = 10;
 $hash = md5('joelsalt');
-
+ */
 
 
 //check player id is a number and if the hash is a valid md5 with no escape characters for possible injections
@@ -72,10 +72,14 @@ if($input_correct)
 		$credits = $row['credits'] + $coins_won;
 	}
 	$response['credits'] = $credits;
-
-	$response = json_encode($response);
-	echo $response;
-	return $response;
+	$mysql_update = "UPDATE player SET credits = $credits, lifetime_spins = lifetime_spins+1 WHERE id = $player_id";
+	if(mysqli_query($conn,$mysql_update))
+	{
+		$response = json_encode($response);
+		return $response;
+	}else{
+		return 'Query failed';
+	}
 }
 
 
